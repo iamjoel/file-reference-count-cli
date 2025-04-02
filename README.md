@@ -48,7 +48,7 @@ npm unlink file-ref-count-cli
 ## Usage
 
 ```bash
-file-ref-count <directory> > output.json
+file-ref-count <directory> > output.csv
 ```
 
 This command analyzes all supported file types in the specified directory and outputs the number of references for each file.
@@ -58,29 +58,24 @@ This command analyzes all supported file types in the specified directory and ou
 #### Default Output Format
 
 ```bash
-$ file-ref-count ./src
+$ file-ref-count ./src > output.csv
 ```
 
 By default, the tool outputs a simple format with file paths and their reference counts:
 
-```json
-[
-  {
-    "src/components/Button.tsx": 15
-  },
-  {
-    "src/utils/helpers.ts": 8
-  },
-  {
-    "src/components/Form.tsx": 5
-  }
-]
+```plain
+filePath,referenceCount
+app/components/base/icons/IconBase.tsx,698
+utils/classnames.ts,569
+app/components/workflow/types.ts,494
+app/components/base/button/index.tsx,263
+app/components/base/toast/index.tsx,172
 ```
 
 #### Detailed Output Format (-d option)
 
 ```bash
-$ file-ref-count ./src -d
+$ file-ref-count ./src -d > output.json
 ```
 
 With the -d option, the tool provides detailed information including the files that reference each file:
@@ -89,16 +84,15 @@ With the -d option, the tool provides detailed information including the files t
 [
   {
     "filePath": "src/components/Button.tsx",
-    "referenceCount": 15,
+    "referenceCount": 3,
     "referencedBy": [
       "src/pages/Home.tsx",
       "src/components/Form.tsx",
-      "src/components/Header.tsx"
     ]
   },
   {
     "filePath": "src/utils/helpers.ts",
-    "referenceCount": 8,
+    "referenceCount": 2,
     "referencedBy": [
       "src/services/api.ts",
       "src/hooks/useData.ts"

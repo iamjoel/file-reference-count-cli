@@ -20,10 +20,21 @@ export function formatResults(references: FileReference[], baseDir: string, deta
       }
       return { [filePath]: ref.referenceCount };
     })
-    .sort((a, b) => {
-      const countA = detailed ? a.referenceCount : Object.values(a)[0];
-      const countB = detailed ? b.referenceCount : Object.values(b)[0];
-      return (countB as number) - (countA as number);
-    });
-  return JSON.stringify(res, null, 2);
+  const sortedList = [...res].sort((a, b) => {
+    const countA = detailed ? a.referenceCount : Object.values(a)[0];
+    const countB = detailed ? b.referenceCount : Object.values(b)[0];
+    return (countB as number) - (countA as number);
+  });
+  if (detailed) {
+    return JSON.stringify(sortedList, null, 2);
+  }
+  // CSV header
+  let csvOutput = 'filePath,referenceCount\n';
+  // Add each file's data
+  sortedList.forEach((item: any) => {
+    const filePath = Object.keys(item)[0];
+    const count = item[filePath] || 0;
+    csvOutput += `${filePath},${count}\n`;
+  });
+  return csvOutput;
 }
