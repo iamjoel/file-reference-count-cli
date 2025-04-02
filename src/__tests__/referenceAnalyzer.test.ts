@@ -1,5 +1,6 @@
 import { analyzeReferences, findImportStatements, incrementReferenceCount } from '../referenceAnalyzer';
 import { resolve } from 'path';
+import { readFileSync } from 'fs';
 
 describe('referenceAnalyzer', () => {
   describe('findImportStatements', () => {
@@ -74,7 +75,7 @@ describe('referenceAnalyzer', () => {
         return '';
       });
 
-      const references = analyzeReferences(files);
+      const references = analyzeReferences(files, __dirname);
       const fileB = references.find(ref => ref.filePath === files[1]);
       const fileA = references.find(ref => ref.filePath === files[0]);
 

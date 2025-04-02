@@ -30,16 +30,13 @@ describe('resultFormatter', () => {
   ];
 
   it('should format results correctly', () => {
-    const result = formatResults(mockReferences, baseDir);
+    const result = formatResults(mockReferences, baseDir, true);
     const parsedResult = JSON.parse(result);
 
-    // 验证结果是否为数组
     expect(Array.isArray(parsedResult)).toBe(true);
 
-    // 验证数组长度
     expect(parsedResult.length).toBe(mockReferences.length);
 
-    // 验证按引用次数降序排序
     expect(parsedResult[0].referenceCount).toBe(3);
     expect(parsedResult[1].referenceCount).toBe(2);
     expect(parsedResult[2].referenceCount).toBe(1);

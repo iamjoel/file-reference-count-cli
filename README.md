@@ -1,12 +1,13 @@
 # File Reference Count CLI
 
-A command-line tool for counting file references in code. It analyzes file dependencies in your project, helping you understand the relationships between code files.
+A command-line tool for counting file references in code. It analyzes file dependencies in your project, helping you detect the high frequently referenced files.
 
 ## Features
 
 - Supports multiple file types: `.ts`, `.tsx`, `.js`, `.jsx`
 - Automatically detects import and require statements
 - Supports relative path imports
+- Supports path aliases (via tsconfig.json paths)
 - Supports index files (e.g., index.ts, index.js)
 - Provides file reference count statistics
 
@@ -105,6 +106,33 @@ With the -d option, the tool provides detailed information including the files t
   }
 ]
 ```
+
+### Path Aliases Support
+
+The tool supports resolving path aliases defined in your `tsconfig.json` file. Here's how it works:
+
+1. **Configuration Example**
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@utils/*": ["src/utils/*"]
+    }
+  }
+}
+```
+
+2. **Import Resolution**
+
+When analyzing files, the tool will:
+- Match import paths against your tsconfig.json paths configuration
+- Resolve aliased imports to their actual file paths
+- Count references correctly for aliased imports
+
+For example, an import like `import { Button } from '@components/Button'` will be resolved to `src/components/Button.ts` (or other supported extensions).
 
 ### Use Cases
 

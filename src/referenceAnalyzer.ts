@@ -1,5 +1,37 @@
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { readFileSync, existsSync } from 'fs';
+import { resolve, dirname } from 'path';
+
+interface TsConfig {
+  compilerOptions?: {
+    paths?: Record<string, string[]>;
+  };
+}
+
+function loadTsConfig(projectRoot: string): TsConfig | null {
+  const tsConfigPath = resolve(projectRoot, 'tsconfig.json');
+  if (!existsSync(tsConfigPath)) return null;
+
+  try {
+    const content = readFileSync(tsConfigPath, 'utf-8');
+    return JSON.parse(content);
+  } catch (error) {
+    return null;
+  }
+}
+
+function resolveAliasPath(importPath: string, projectRoot: string, paths?: Record<string, string[]>): string | null {
+  if (!paths) return null;
+  for (const [alias, [aliasPath]] of Object.entries(paths)) {
+    const aliasPattern = alias.replace(/\*/g, '(.*)');
+    const match = importPath.match(new RegExp(`^${aliasPattern}$`));
+    if (match) {
+      const wildcard = match[1] || '';
+      const resolvedPath = aliasPath.replace('*', wildcard);
+      return resolve(projectRoot, resolvedPath);
+    }
+  }
+  return null;
+}
 
 export interface FileReference {
   filePath: string;
@@ -12,7 +44,10 @@ export interface FileReference {
  * @param files Array of file paths to analyze
  * @returns Map of file references
  */
-export function analyzeReferences(files: string[]): FileReference[] {
+export function analyzeReferences(files: string[], projectRoot: string): FileReference[] {
+  const tsConfig = loadTsConfig(projectRoot);
+  const paths = tsConfig?.compilerOptions?.paths;
+
   const referenceMap = new Map<string, { count: number; referencedBy: Set<string> }>();
 
   // Initialize reference counts and referencedBy sets
@@ -26,8 +61,9 @@ export function analyzeReferences(files: string[]): FileReference[] {
     const importMatches = findImportStatements(content);
 
     importMatches.forEach(importPath => {
-      if (importPath.startsWith('.')) {
-        const baseAbsolutePath = resolve(file, '..', importPath);
+      const aliasPath = resolveAliasPath(importPath, projectRoot, paths);
+      if (aliasPath || importPath.startsWith('.')) {
+        const baseAbsolutePath = aliasPath || resolve(file, '..', importPath);
         const extensions = ["", ".ts", ".tsx", ".js", ".jsx", "/index.ts", "/index.tsx", "/index.js", "/index.jsx"];
 
         for (const ext of extensions) {

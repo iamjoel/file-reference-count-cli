@@ -21,7 +21,7 @@ program
       const files = await findSourceFiles(targetDir);
 
       // Analyze file references
-      const referenceMap = analyzeReferences(files);
+      const referenceMap = analyzeReferences(files, targetDir);
 
       // Format results
       const results = formatResults(referenceMap, targetDir, program.opts().detailed);
