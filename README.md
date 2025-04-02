@@ -52,35 +52,58 @@ file-ref-count <directory> > output.json
 
 This command analyzes all supported file types in the specified directory and outputs the number of references for each file.
 
-### Example
+### Examples
+
+#### Default Output Format
 
 ```bash
-$ file-reference-count ./src
+$ file-ref-count ./src
 ```
 
-Output:
+By default, the tool outputs a simple format with file paths and their reference counts:
+
 ```json
-{
-  "files": [
-    {
-      "path": "src/components/Button.tsx",
-      "referenceCount": 15,
-      "referencedBy": [
-        "src/pages/Home.tsx",
-        "src/components/Form.tsx",
-        "src/components/Header.tsx"
-      ]
-    },
-    {
-      "path": "src/utils/helpers.ts",
-      "referenceCount": 8,
-      "referencedBy": [
-        "src/services/api.ts",
-        "src/hooks/useData.ts"
-      ]
-    }
-  ]
-}
+[
+  {
+    "src/components/Button.tsx": 15
+  },
+  {
+    "src/utils/helpers.ts": 8
+  },
+  {
+    "src/components/Form.tsx": 5
+  }
+]
+```
+
+#### Detailed Output Format (-d option)
+
+```bash
+$ file-ref-count ./src -d
+```
+
+With the -d option, the tool provides detailed information including the files that reference each file:
+
+```json
+[
+  {
+    "filePath": "src/components/Button.tsx",
+    "referenceCount": 15,
+    "referencedBy": [
+      "src/pages/Home.tsx",
+      "src/components/Form.tsx",
+      "src/components/Header.tsx"
+    ]
+  },
+  {
+    "filePath": "src/utils/helpers.ts",
+    "referenceCount": 8,
+    "referencedBy": [
+      "src/services/api.ts",
+      "src/hooks/useData.ts"
+    ]
+  }
+]
 ```
 
 ### Use Cases

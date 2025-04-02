@@ -12,6 +12,7 @@ program
   .name('file-ref-count')
   .description('Count references of TypeScript/JavaScript files in a directory')
   .argument('<directory>', 'Directory to analyze')
+  .option('-d, --detailed', 'Show detailed output format')
   .action(async (directory: string) => {
     try {
       const targetDir = resolve(directory);
@@ -23,7 +24,7 @@ program
       const referenceMap = analyzeReferences(files);
 
       // Format results
-      const results = formatResults(referenceMap, targetDir);
+      const results = formatResults(referenceMap, targetDir, program.opts().detailed);
 
       // Generate and print table
       console.log(results);
